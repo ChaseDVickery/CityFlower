@@ -1,6 +1,16 @@
 CityFlow
 ============
 
+Installation
+------------
+
+- `Create/Activate conda environment`
+- `Install CMake`
+- `Get and Install CityFlower`
+     ``git clone https://github.com/ChaseDVickery/CityFlower.git``
+     
+     ``pip install CityFlower/``
+
 .. image:: https://readthedocs.org/projects/cityflow/badge/?version=latest
     :target: https://cityflow.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
