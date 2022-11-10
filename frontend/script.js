@@ -154,6 +154,7 @@ function start() {
             hideCanvas();
             try {
                 simulation = JSON.parse(roadnetData[0]);
+                console.log(simulation);
             } catch (e) {
                 infoAppend("Parsing roadnet file failed");
                 loading = false;

@@ -140,6 +140,11 @@ namespace CityFlow {
             buffer.notifiedVehicles.clear();
             buffer.isNotifiedVehicles = false;
         }
+        // set new vehicle passengers
+        if (buffer.isPassengersSet) {
+            vehicleInfo.passengers = buffer.passengers;
+            buffer.isPassengersSet = false;
+        }
     }
 
 
@@ -454,5 +459,11 @@ namespace CityFlow {
         info["route"] = route;
 
         return info;
+    }
+
+    // Sets the new number of passengers for the vehicle (buffered)
+    void Vehicle::setPassengers(int passengers) {
+        buffer.passengers = passengers;
+        buffer.isPassengersSet = true;
     }
 }

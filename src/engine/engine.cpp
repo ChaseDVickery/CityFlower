@@ -143,6 +143,8 @@ namespace CityFlow {
                 vehicleInfo.minGap = getJsonMember<double>("minGap", vehicle);
                 vehicleInfo.maxSpeed = getJsonMember<double>("maxSpeed", vehicle);
                 vehicleInfo.headwayTime = getJsonMember<double>("headwayTime", vehicle);
+                // New
+                vehicleInfo.passengers = getJsonMember<int>("passengers", vehicle);
                 vehicleInfo.route = route;
                 int startTime = getJsonMember<int>("startTime", flow, 0);
                 int endTime = getJsonMember<int>("endTime", flow, -1);
@@ -300,6 +302,8 @@ namespace CityFlow {
                         vehicleMap.erase(vehicle->getId());
                         finishedVehicleCnt += 1;
                         cumulativeTravelTime += getCurrentTime() - vehicle->getEnterTime();
+                        // Add to the cumulative passenger travel time (for each passenger)
+                        finishedPassengerCnt = vehicle->getPassengers();
                     }
                     auto iter = vehiclePool.find(vehicle->getPriority());
                     threadVehiclePool[iter->second.second].erase(vehicle);
@@ -690,6 +694,17 @@ namespace CityFlow {
         return n == 0 ? 0 : tt / n;
     }
 
+    double Engine::getAveragePassengerTravelTime() const {
+        // double tt = cumulativeTravelTime;
+        // int n = finishedVehicleCnt;
+        // for (auto &vehicle_pair : vehiclePool) {
+        //     auto &vehicle = vehicle_pair.second.first;
+        //     tt += getCurrentTime() - vehicle->getEnterTime();
+        //     n++;
+        // }
+        // return n == 0 ? 0 : tt / n;
+    }
+
     void Engine::pushVehicle(const std::map<std::string, double> &info, const std::vector<std::string> &roads) {
         VehicleInfo vehicleInfo;
         std::map<std::string, double>::const_iterator it;
@@ -750,6 +765,8 @@ namespace CityFlow {
 
         finishedVehicleCnt = 0;
         cumulativeTravelTime = 0;
+        finishedPassengerCnt = 0;
+        cumulativePassengerTravelTime = 0;
 
         for (auto &flow : flows) flow.reset();
         step = 0;
@@ -775,6 +792,14 @@ namespace CityFlow {
             std::cerr << "write roadnet log file error" << std::endl;
         }
         logOut.open(logFile);
+    }
+
+    std::map<std::string, int> Engine::getVehiclePassengers() const {
+        std::map<std::string, int> ret;
+        for (const Vehicle* vehicle : getRunningVehicles()) {
+            ret.emplace(vehicle->getId(), vehicle->getPassengers());
+        }
+        return ret;
     }
 
     std::vector<const Vehicle *> Engine::getRunningVehicles(bool includeWaiting) const {

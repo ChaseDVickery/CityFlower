@@ -57,6 +57,8 @@ namespace CityFlow {
 
         int finishedVehicleCnt = 0;
         double cumulativeTravelTime = 0;
+        int finishedPassengerCnt = 0;
+        double cumulativePassengerTravelTime = 0;
 
     private:
         void vehicleControl(Vehicle &vehicle, std::vector<std::pair<Vehicle *, double>> &buffer);
@@ -152,6 +154,8 @@ namespace CityFlow {
 
         std::map<std::string, double> getVehicleSpeed() const;
 
+        std::map<std::string, int> getVehiclePassengers() const;
+
         std::map<std::string, double> getVehicleDistance() const;
 
         std::string getLeader(const std::string &vehicleId) const;
@@ -159,6 +163,8 @@ namespace CityFlow {
         double getCurrentTime() const;
 
         double getAverageTravelTime() const;
+
+        double getAveragePassengerTravelTime() const;
 
         void setTrafficLightPhase(const std::string &id, int phaseIndex);
 
@@ -180,6 +186,7 @@ namespace CityFlow {
         bool setRoute(const std::string &vehicle_id, const std::vector<std::string> &anchor_id);
 
         std::map<std::string, std::string> getVehicleInfo(const std::string &id) const;
+
     };
 
 }

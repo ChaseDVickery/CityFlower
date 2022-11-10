@@ -35,7 +35,12 @@ PYBIND11_MODULE(cityflow, m) {
         .def("load", &CityFlow::Engine::load, "archive"_a)
         .def("snapshot", &CityFlow::Engine::snapshot)
         .def("load_from_file", &CityFlow::Engine::loadFromFile, "path"_a)
-        .def("set_vehicle_route", &CityFlow::Engine::setRoute, "vehicle_id"_a, "route"_a);
+        .def("set_vehicle_route", &CityFlow::Engine::setRoute, "vehicle_id"_a, "route"_a)
+
+        // New API
+        .def("get_vehicle_passengers", &CityFlow::Engine::getVehiclePassengers)
+        //.def("set_vehicle_passengers", &CityFlow::Engine::setVehiclePassengers, "vehicle_id"_a, "speed"_a)
+        ;
 
     py::class_<CityFlow::Archive>(m, "Archive")
         .def(py::init<const CityFlow::Engine&>())
