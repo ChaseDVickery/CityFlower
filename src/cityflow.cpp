@@ -38,6 +38,7 @@ PYBIND11_MODULE(cityflow, m) {
         .def("set_vehicle_route", &CityFlow::Engine::setRoute, "vehicle_id"_a, "route"_a)
 
         // New API
+        // get_vehicle_passengers: Returns dictionary mapping vehicle IDs (str) to the number of passengers (int) 
         .def("get_vehicle_passengers", &CityFlow::Engine::getVehiclePassengers)
         //.def("set_vehicle_passengers", &CityFlow::Engine::setVehiclePassengers, "vehicle_id"_a, "speed"_a)
         ;
