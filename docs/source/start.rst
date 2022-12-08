@@ -132,6 +132,11 @@ Data Access API
 - Get distance travelled on current lane of each vehicle.
 - Return a ``dict`` with vehicle id as key and corresponding distance as value.
 
+``get_vehicle_passengers()``:
+
+- Get number of passengers (total number of people) in each vehicle.
+- Return a ``dict`` with vehicle id as key and corresponding passerger count as value.
+
 ``get_leader(vehicle_id)``
 
 - Return the id of the vehicle in front of ``vehicle_id``.
@@ -144,7 +149,7 @@ Data Access API
 
 ``get_average_travel_time()``:
 
-- Get average travel time (in seconds)
+- Get per-person average travel time (in seconds)
 - Return a ``double``
 
 Control API

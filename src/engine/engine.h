@@ -55,10 +55,8 @@ namespace CityFlow {
         bool laneChange;
         int manuallyPushCnt = 0;
 
-        int finishedVehicleCnt = 0;
+        int finishedCnt = 0;
         double cumulativeTravelTime = 0;
-        int finishedPassengerCnt = 0;
-        double cumulativePassengerTravelTime = 0;
 
     private:
         void vehicleControl(Vehicle &vehicle, std::vector<std::pair<Vehicle *, double>> &buffer);
@@ -164,7 +162,7 @@ namespace CityFlow {
 
         double getAverageTravelTime() const;
 
-        double getAveragePassengerTravelTime() const;
+        double getAverageWaitTime() const;
 
         void setTrafficLightPhase(const std::string &id, int phaseIndex);
 

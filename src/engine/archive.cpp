@@ -8,7 +8,7 @@ namespace CityFlow {
 
     Archive::Archive(const Engine &engine)
     : step(engine.step), activeVehicleCount(engine.activeVehicleCount), rnd(engine.rnd),
-      finishedVehicleCnt(engine.finishedVehicleCnt), cumulativeTravelTime(engine.cumulativeTravelTime) {
+      finishedCnt(engine.finishedCnt), cumulativeTravelTime(engine.cumulativeTravelTime) {
         // copy the vehicle Pool
         vehiclePool = copyVehiclePool(engine.vehiclePool);
 
@@ -121,7 +121,7 @@ namespace CityFlow {
             light.remainDuration = archive.remainDuration;
             light.curPhaseIndex = archive.curPhaseIndex;
         }
-        engine.finishedVehicleCnt = this->finishedVehicleCnt;
+        engine.finishedCnt = this->finishedCnt;
         engine.cumulativeTravelTime = this->cumulativeTravelTime;
     }
 
@@ -170,7 +170,7 @@ namespace CityFlow {
         dumpFlows(jsonRoot);
         dumpTrafficLights(jsonRoot);
 
-        jsonRoot.AddMember("finishedVehicleCnt", finishedVehicleCnt, allocator);
+        jsonRoot.AddMember("finishedCnt", finishedCnt, allocator);
         jsonRoot.AddMember("cumulativeTravelTime", cumulativeTravelTime, allocator);
 
         writeJsonToFile(fileName, jsonRoot);
@@ -545,7 +545,7 @@ namespace CityFlow {
             trafficLightArchive.curPhaseIndex = getJsonMember<int>("curPhaseIndex", trafficLightValue);
         }
 
-        finishedVehicleCnt = getJsonMember<int>("finishedVehicleCnt", jsonRoot);
+        finishedCnt = getJsonMember<int>("finishedCnt", jsonRoot);
         cumulativeTravelTime = getJsonMember<double>("cumulativeTravelTime", jsonRoot);
     }
 

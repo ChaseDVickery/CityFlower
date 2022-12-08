@@ -143,7 +143,6 @@ namespace CityFlow {
                 vehicleInfo.minGap = getJsonMember<double>("minGap", vehicle);
                 vehicleInfo.maxSpeed = getJsonMember<double>("maxSpeed", vehicle);
                 vehicleInfo.headwayTime = getJsonMember<double>("headwayTime", vehicle);
-                // New
                 vehicleInfo.passengers = getJsonMember<int>("passengers", vehicle);
                 vehicleInfo.route = route;
                 int startTime = getJsonMember<int>("startTime", flow, 0);
@@ -300,10 +299,10 @@ namespace CityFlow {
                     vehicleRemoveBuffer.insert(vehicle);
                     if (!vehicle->getLaneChange()->hasFinished()) {
                         vehicleMap.erase(vehicle->getId());
-                        finishedVehicleCnt += 1;
-                        cumulativeTravelTime += getCurrentTime() - vehicle->getEnterTime();
-                        // Add to the cumulative passenger travel time (for each passenger)
-                        finishedPassengerCnt = vehicle->getPassengers();
+                        int people = vehicle->getPassengers();
+                        finishedCnt += people;
+                        cumulativeTravelTime += people *
+                            (getCurrentTime() - vehicle->getEnterTime());
                     }
                     auto iter = vehiclePool.find(vehicle->getPriority());
                     threadVehiclePool[iter->second.second].erase(vehicle);
@@ -685,7 +684,7 @@ namespace CityFlow {
 
     double Engine::getAverageTravelTime() const {
         double tt = cumulativeTravelTime;
-        int n = finishedVehicleCnt;
+        int n = finishedCnt;
         for (auto &vehicle_pair : vehiclePool) {
             auto &vehicle = vehicle_pair.second.first;
             tt += getCurrentTime() - vehicle->getEnterTime();
@@ -694,15 +693,15 @@ namespace CityFlow {
         return n == 0 ? 0 : tt / n;
     }
 
-    double Engine::getAveragePassengerTravelTime() const {
-        // double tt = cumulativeTravelTime;
-        // int n = finishedVehicleCnt;
-        // for (auto &vehicle_pair : vehiclePool) {
-        //     auto &vehicle = vehicle_pair.second.first;
-        //     tt += getCurrentTime() - vehicle->getEnterTime();
-        //     n++;
-        // }
-        // return n == 0 ? 0 : tt / n;
+    double Engine::getAverageWaitTime() const {
+        double tt = cumulativeTravelTime;
+        int n = finishedCnt;
+        for (auto &vehicle_pair : vehiclePool) {
+            auto &vehicle = vehicle_pair.second.first;
+            tt += getCurrentTime() - vehicle->getEnterTime();
+            n++;
+        }
+        return n == 0 ? 0 : tt / n;
     }
 
     void Engine::pushVehicle(const std::map<std::string, double> &info, const std::vector<std::string> &roads) {
@@ -763,10 +762,8 @@ namespace CityFlow {
         vehicleMap.clear();
         roadnet.reset();
 
-        finishedVehicleCnt = 0;
+        finishedCnt = 0;
         cumulativeTravelTime = 0;
-        finishedPassengerCnt = 0;
-        cumulativePassengerTravelTime = 0;
 
         for (auto &flow : flows) flow.reset();
         step = 0;
