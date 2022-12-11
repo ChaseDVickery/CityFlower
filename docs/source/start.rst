@@ -122,24 +122,28 @@ Data Access API
 
 - Note that all items are stored as ``str``.
 
-``get_vehicle_speed()``:
+``get_vehicle_speed(include_waiting=False)``:
 
 - Get speed of each vehicle
+- Include vehicles in lane's waiting buffer if ``include_waiting=True``
 - Return a ``dict`` with vehicle id as key and corresponding speed as value.
 
-``get_vehicle_distance()``:
+``get_vehicle_distance(include_waiting=False)``:
 
 - Get distance travelled on current lane of each vehicle.
+- Include vehicles in lane's waiting buffer if ``include_waiting=True``
 - Return a ``dict`` with vehicle id as key and corresponding distance as value.
 
-``get_vehicle_passengers()``:
+``get_vehicle_passengers(include_waiting=False)``:
 
 - Get number of passengers (total number of people) in each vehicle.
+- Include vehicles in lane's waiting buffer if ``include_waiting=True``
 - Return a ``dict`` with vehicle id as key and corresponding passerger count as value.
 
-``get_vehicle_type()``:
+``get_vehicle_type(include_waiting=False)``:
 
 - Get the type of each vehicle (and pedestrian).
+- Include vehicles in lane's waiting buffer if ``include_waiting=True``
 - Return a ``dict`` with vehicle id as key and corresponding type as value.
 
 ``get_leader(vehicle_id)``
