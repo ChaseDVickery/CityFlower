@@ -675,17 +675,17 @@ namespace CityFlow {
         return ret;
     }
 
-    std::map<std::string, double> Engine::getVehicleSpeed() const {
+    std::map<std::string, double> Engine::getVehicleSpeed(bool includeWaiting) const {
         std::map<std::string, double> ret;
-        for (const Vehicle* vehicle : getRunningVehicles()) {
+        for (const Vehicle* vehicle : getRunningVehicles(includeWaiting)) {
             ret.emplace(vehicle->getId(), vehicle->getSpeed());
         }
         return ret;
     }
 
-    std::map<std::string, double> Engine::getVehicleDistance() const {
+    std::map<std::string, double> Engine::getVehicleDistance(bool includeWaiting) const {
         std::map<std::string, double> ret;
-        for (const Vehicle* vehicle : getRunningVehicles()) {
+        for (const Vehicle* vehicle : getRunningVehicles(includeWaiting)) {
             ret.emplace(vehicle->getId(), vehicle->getDistance());
         }
         return ret;
@@ -826,17 +826,17 @@ namespace CityFlow {
         logOut.open(logFile);
     }
 
-    std::map<std::string, int> Engine::getVehiclePassengers() const {
+    std::map<std::string, int> Engine::getVehiclePassengers(bool includeWaiting) const {
         std::map<std::string, int> ret;
-        for (const Vehicle* vehicle : getRunningVehicles()) {
+        for (const Vehicle* vehicle : getRunningVehicles(includeWaiting)) {
             ret.emplace(vehicle->getId(), vehicle->getPassengers());
         }
         return ret;
     }
 
-    std::map<std::string, std::string> Engine::getVehicleType() const {
+    std::map<std::string, std::string> Engine::getVehicleType(bool includeWaiting) const {
         std::map<std::string, std::string> ret;
-        for (const Vehicle* vehicle : getRunningVehicles()) {
+        for (const Vehicle* vehicle : getRunningVehicles(includeWaiting)) {
             ret.emplace(vehicle->getId(), vehicle->getType());
         }
         return ret;

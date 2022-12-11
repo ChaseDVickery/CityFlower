@@ -150,13 +150,13 @@ namespace CityFlow {
 
         std::map<std::string, std::vector<std::string>> getLaneVehicles();
 
-        std::map<std::string, double> getVehicleSpeed() const;
+        std::map<std::string, double> getVehicleSpeed(bool includeWaiting = false) const;
 
-        std::map<std::string, int> getVehiclePassengers() const;
+        std::map<std::string, int> getVehiclePassengers(bool includeWaiting = false) const;
 
-        std::map<std::string, std::string> getVehicleType() const;
+        std::map<std::string, std::string> getVehicleType(bool includeWaiting = false) const;
 
-        std::map<std::string, double> getVehicleDistance() const;
+        std::map<std::string, double> getVehicleDistance(bool includeWaiting = false) const;
 
         std::string getLeader(const std::string &vehicleId) const;
 
