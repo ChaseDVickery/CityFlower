@@ -170,8 +170,21 @@ namespace CityFlow {
         dumpFlows(jsonRoot);
         dumpTrafficLights(jsonRoot);
 
-        jsonRoot.AddMember("finishedCnt", finishedCnt, allocator);
-        jsonRoot.AddMember("cumulativeTravelTime", cumulativeTravelTime, allocator);
+        rapidjson::Value finishedCntValue(rapidjson::kObjectType);
+        for (const auto &iter : finishedCnt) {
+            finishedCntValue.AddMember(
+                rapidjson::Value(iter.first, allocator).Move(),
+                iter.second, allocator);
+        }
+        jsonRoot.AddMember("finishedCnt", finishedCntValue, allocator);
+
+        rapidjson::Value cumulativeTravelTimeValue(rapidjson::kObjectType);
+        for (const auto &iter : cumulativeTravelTime) {
+            cumulativeTravelTimeValue.AddMember(
+                rapidjson::Value(iter.first, allocator).Move(),
+                iter.second, allocator);
+        }
+        jsonRoot.AddMember("cumulativeTravelTime", cumulativeTravelTimeValue, allocator);
 
         writeJsonToFile(fileName, jsonRoot);
     }
@@ -199,6 +212,8 @@ namespace CityFlow {
         vehicleValue.AddMember("headwayTime", vehicle.vehicleInfo.headwayTime, allocator);
         vehicleValue.AddMember("yieldDistance", vehicle.vehicleInfo.yieldDistance, allocator);
         vehicleValue.AddMember("turnSpeed", vehicle.vehicleInfo.turnSpeed, allocator);
+        vehicleValue.AddMember("passengers", vehicle.vehicleInfo.passengers, allocator);
+        vehicleValue.AddMember("type", vehicle.vehicleInfo.type, allocator);
 
 
         // save route
@@ -374,6 +389,8 @@ namespace CityFlow {
             vehicleInfo.headwayTime = getJsonMember<double>("headwayTime", vehicleValue);
             vehicleInfo.yieldDistance = getJsonMember<double>("yieldDistance", vehicleValue);
             vehicleInfo.turnSpeed = getJsonMember<double>("turnSpeed", vehicleValue);
+            vehicleInfo.passengers = getJsonMember<int>("passengers", vehicleValue);
+            vehicleInfo.type = getJsonMember<const char*>("type", vehicleValue);
 
             // Rebuild Route
             std::vector<Road *> route;
@@ -545,8 +562,15 @@ namespace CityFlow {
             trafficLightArchive.curPhaseIndex = getJsonMember<int>("curPhaseIndex", trafficLightValue);
         }
 
-        finishedCnt = getJsonMember<int>("finishedCnt", jsonRoot);
-        cumulativeTravelTime = getJsonMember<double>("cumulativeTravelTime", jsonRoot);
+        auto &finishedCntValue = getJsonMemberObject("finishedCnt", jsonRoot);
+        for (auto &entry : finishedCntValue.GetObject()) {
+            finishedCnt[entry.name.GetString()] = entry.value.GetInt();
+        }
+
+        auto &cumulativeTravelTimeValue = getJsonMemberObject("cumulativeTravelTime", jsonRoot);
+        for (auto &entry : cumulativeTravelTimeValue.GetObject()) {
+            cumulativeTravelTime[entry.name.GetString()] = entry.value.GetDouble();
+        }
     }
 
 

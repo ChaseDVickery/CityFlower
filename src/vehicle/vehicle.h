@@ -43,6 +43,7 @@ namespace CityFlow {
         double turnSpeed = 8.3333;
         std::shared_ptr<const Route> route = nullptr;
         int passengers = 1;
+        std::string type = "car";
     };
 
 
@@ -61,6 +62,8 @@ namespace CityFlow {
             bool isEnterLaneLinkTimeSet = false;
             bool isBlockerSet = false;
             bool isCustomSpeedSet = false;
+            bool isPassengersSet = false;
+            bool isTypeSet = false;
             double dis;
             double deltaDis;
             double speed;
@@ -70,8 +73,8 @@ namespace CityFlow {
             bool end;
             Vehicle *blocker = nullptr;
             size_t enterLaneLinkTime;
-            bool isPassengersSet = false;
             int passengers;
+            std::string type;
         };
 
         struct LaneChangeInfo {
@@ -368,12 +371,13 @@ namespace CityFlow {
 
         std::map<std::string, std::string> getInfo() const;
 
-
-        // # Passengers
         void setPassengers(int passengers);
+
         inline double getPassengers() const { return vehicleInfo.passengers; }
 
-        // 
+        void setType(std::string type);
+
+        inline std::string getType() const { return vehicleInfo.type; }
 
      };
 

@@ -25,6 +25,7 @@ PYBIND11_MODULE(cityflow, m) {
         .def("get_leader", &CityFlow::Engine::getLeader, "vehicle_id"_a)
         .def("get_current_time", &CityFlow::Engine::getCurrentTime)
         .def("get_average_travel_time", &CityFlow::Engine::getAverageTravelTime)
+        .def("get_average_travel_time_by_type", &CityFlow::Engine::getAverageTravelTimeByType)
         .def("set_tl_phase", &CityFlow::Engine::setTrafficLightPhase, "intersection_id"_a, "phase_id"_a)
         .def("set_vehicle_speed", &CityFlow::Engine::setVehicleSpeed, "vehicle_id"_a, "speed"_a)
         .def("set_replay_file", &CityFlow::Engine::setReplayLogFile, "replay_file"_a)
@@ -37,6 +38,7 @@ PYBIND11_MODULE(cityflow, m) {
         .def("load_from_file", &CityFlow::Engine::loadFromFile, "path"_a)
         .def("set_vehicle_route", &CityFlow::Engine::setRoute, "vehicle_id"_a, "route"_a)
         .def("get_vehicle_passengers", &CityFlow::Engine::getVehiclePassengers)
+        .def("get_vehicle_type", &CityFlow::Engine::getVehicleType)
         ;
 
     py::class_<CityFlow::Archive>(m, "Archive")

@@ -140,10 +140,13 @@ namespace CityFlow {
             buffer.notifiedVehicles.clear();
             buffer.isNotifiedVehicles = false;
         }
-        // set new vehicle passengers
         if (buffer.isPassengersSet) {
             vehicleInfo.passengers = buffer.passengers;
             buffer.isPassengersSet = false;
+        }
+        if (buffer.isTypeSet) {
+            vehicleInfo.type = buffer.type;
+            buffer.isTypeSet = false;
         }
     }
 
@@ -461,9 +464,13 @@ namespace CityFlow {
         return info;
     }
 
-    // Sets the new number of passengers for the vehicle (buffered)
     void Vehicle::setPassengers(int passengers) {
         buffer.passengers = passengers;
         buffer.isPassengersSet = true;
+    }
+
+    void Vehicle::setType(std::string type) {
+        buffer.type = type;
+        buffer.isTypeSet = true;
     }
 }

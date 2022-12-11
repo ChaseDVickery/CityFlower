@@ -8,6 +8,15 @@
 #include <memory>
 
 #include <ctime>
+
+struct AccumulateMapValues
+{
+    template<class V, class Pair>
+    V operator()(V value, const Pair &pair) const {
+        return value + pair.second;
+    }
+};
+
 namespace CityFlow {
 
     Engine::Engine(const std::string &configFile, int threadNum) : threadNum(threadNum), startBarrier(threadNum + 1),
@@ -144,6 +153,7 @@ namespace CityFlow {
                 vehicleInfo.maxSpeed = getJsonMember<double>("maxSpeed", vehicle);
                 vehicleInfo.headwayTime = getJsonMember<double>("headwayTime", vehicle);
                 vehicleInfo.passengers = getJsonMember<int>("passengers", vehicle);
+                vehicleInfo.type = getJsonMember<const char*>("type", vehicle);
                 vehicleInfo.route = route;
                 int startTime = getJsonMember<int>("startTime", flow, 0);
                 int endTime = getJsonMember<int>("endTime", flow, -1);
@@ -300,8 +310,11 @@ namespace CityFlow {
                     if (!vehicle->getLaneChange()->hasFinished()) {
                         vehicleMap.erase(vehicle->getId());
                         int people = vehicle->getPassengers();
-                        finishedCnt += people;
-                        cumulativeTravelTime += people *
+                        std::string type = vehicle->getType();
+                        auto pairCnt = finishedCnt.emplace(type, 0);
+                        pairCnt.first->second += people;
+                        auto timeCnt = cumulativeTravelTime.emplace(type, 0.0);
+                        timeCnt.first->second += people *
                             (getCurrentTime() - vehicle->getEnterTime());
                     }
                     auto iter = vehiclePool.find(vehicle->getPriority());
@@ -683,25 +696,47 @@ namespace CityFlow {
     }
 
     double Engine::getAverageTravelTime() const {
-        double tt = cumulativeTravelTime;
-        int n = finishedCnt;
+        double tt = std::accumulate(
+            cumulativeTravelTime.begin(),
+            cumulativeTravelTime.end(),
+            0.0, AccumulateMapValues());
+        int n = std::accumulate(
+            finishedCnt.begin(),
+            finishedCnt.end(),
+            0, AccumulateMapValues());
         for (auto &vehicle_pair : vehiclePool) {
             auto &vehicle = vehicle_pair.second.first;
-            tt += getCurrentTime() - vehicle->getEnterTime();
-            n++;
+            int people = vehicle->getPassengers();
+            tt += people * (getCurrentTime() - vehicle->getEnterTime());
+            n += people;
         }
         return n == 0 ? 0 : tt / n;
     }
 
-    double Engine::getAverageWaitTime() const {
-        double tt = cumulativeTravelTime;
-        int n = finishedCnt;
+    std::map<std::string, double> Engine::getAverageTravelTimeByType() const {
+        std::map<const std::string, double> type_tt = cumulativeTravelTime;
+        std::map<const std::string, int> type_n = finishedCnt;
         for (auto &vehicle_pair : vehiclePool) {
             auto &vehicle = vehicle_pair.second.first;
-            tt += getCurrentTime() - vehicle->getEnterTime();
-            n++;
+            int people = vehicle->getPassengers();
+            std::string type = vehicle->getType();
+            auto timeCnt = type_tt.emplace(type, 0.0);
+            timeCnt.first->second += people *
+                (getCurrentTime() - vehicle->getEnterTime());
+            auto pairCnt = type_n.emplace(type, 0);
+            pairCnt.first->second += people;
         }
-        return n == 0 ? 0 : tt / n;
+        std::map<std::string, double> ret;
+        double tt = 0.0;
+        int n = 0;
+        for (auto iter : type_tt) {
+            std::string type = iter.first;
+            tt += type_tt[type];
+            n += type_n[type];
+            ret[type] = type_n[type] == 0 ? 0 : type_tt[type] / type_n[type];
+        }
+        ret["average"] = n == 0 ? 0 : tt / n;
+        return ret;
     }
 
     void Engine::pushVehicle(const std::map<std::string, double> &info, const std::vector<std::string> &roads) {
@@ -762,8 +797,8 @@ namespace CityFlow {
         vehicleMap.clear();
         roadnet.reset();
 
-        finishedCnt = 0;
-        cumulativeTravelTime = 0;
+        finishedCnt.clear();
+        cumulativeTravelTime.clear();
 
         for (auto &flow : flows) flow.reset();
         step = 0;
@@ -795,6 +830,14 @@ namespace CityFlow {
         std::map<std::string, int> ret;
         for (const Vehicle* vehicle : getRunningVehicles()) {
             ret.emplace(vehicle->getId(), vehicle->getPassengers());
+        }
+        return ret;
+    }
+
+    std::map<std::string, std::string> Engine::getVehicleType() const {
+        std::map<std::string, std::string> ret;
+        for (const Vehicle* vehicle : getRunningVehicles()) {
+            ret.emplace(vehicle->getId(), vehicle->getType());
         }
         return ret;
     }

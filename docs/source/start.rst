@@ -137,6 +137,11 @@ Data Access API
 - Get number of passengers (total number of people) in each vehicle.
 - Return a ``dict`` with vehicle id as key and corresponding passerger count as value.
 
+``get_vehicle_type()``:
+
+- Get the type of each vehicle (and pedestrian).
+- Return a ``dict`` with vehicle id as key and corresponding type as value.
+
 ``get_leader(vehicle_id)``
 
 - Return the id of the vehicle in front of ``vehicle_id``.
@@ -151,6 +156,11 @@ Data Access API
 
 - Get per-person average travel time (in seconds)
 - Return a ``double``
+
+``get_average_travel_time_by_type()``:
+
+- Get per-person average travel time (in seconds)
+- Return a ``dict`` with vehicle type as key and corresponding average travel time as value.
 
 Control API
 -----------

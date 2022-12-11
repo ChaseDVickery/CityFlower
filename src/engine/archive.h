@@ -44,8 +44,8 @@ namespace CityFlow {
         size_t activeVehicleCount;
         std::mt19937 rnd;
 
-        int finishedCnt;
-        double cumulativeTravelTime;
+        std::map<const std::string, int> finishedCnt;
+        std::map<const std::string, double> cumulativeTravelTime;
 
         static VehiclePool copyVehiclePool(const VehiclePool& src);
         static Vehicle *getNewPointer(const VehiclePool &vehiclePool, const Vehicle *old);
