@@ -47,6 +47,9 @@ namespace CityFlow {
         std::map<const std::string, int> finishedCnt;
         std::map<const std::string, double> cumulativeTravelTime;
 
+        std::map<const std::string, int> finishedVhclCnt;
+        std::map<const std::string, double> cumulativeVhclTravelTime;
+
         static VehiclePool copyVehiclePool(const VehiclePool& src);
         static Vehicle *getNewPointer(const VehiclePool &vehiclePool, const Vehicle *old);
         void archiveDrivable(const Drivable *drivable, DrivableArchive &drivableArchive);

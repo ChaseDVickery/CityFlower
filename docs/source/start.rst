@@ -156,14 +156,16 @@ Data Access API
 - Get simulation time (in seconds)
 - Return a ``double``
 
-``get_average_travel_time()``:
+``get_average_travel_time(per_vehicle=False)``:
 
 - Get per-person average travel time (in seconds)
+- Enable legacy per-vehicle averaging if ``per_vehicle=True``
 - Return a ``double``
 
-``get_average_travel_time_by_type()``:
+``get_average_travel_time_by_type(per_vehicle=False)``:
 
 - Get per-person average travel time (in seconds)
+- Enable legacy per-vehicle averaging if ``per_vehicle=True``
 - Return a ``dict`` with vehicle type as key and corresponding average travel time as value.
 
 Control API

@@ -316,6 +316,10 @@ namespace CityFlow {
                         auto timeCnt = cumulativeTravelTime.emplace(type, 0.0);
                         timeCnt.first->second += people *
                             (getCurrentTime() - vehicle->getEnterTime());
+                        pairCnt = finishedVhclCnt.emplace(type, 0);
+                        pairCnt.first->second++;
+                        timeCnt = cumulativeVhclTravelTime.emplace(type, 0.0);
+                        timeCnt.first->second += (getCurrentTime() - vehicle->getEnterTime());
                     }
                     auto iter = vehiclePool.find(vehicle->getPriority());
                     threadVehiclePool[iter->second.second].erase(vehicle);
@@ -695,30 +699,38 @@ namespace CityFlow {
         return step * interval;
     }
 
-    double Engine::getAverageTravelTime() const {
-        double tt = std::accumulate(
-            cumulativeTravelTime.begin(),
-            cumulativeTravelTime.end(),
-            0.0, AccumulateMapValues());
-        int n = std::accumulate(
-            finishedCnt.begin(),
-            finishedCnt.end(),
-            0, AccumulateMapValues());
+    double Engine::getAverageTravelTime(bool perVehicle) const {
+        double tt = perVehicle ? std::accumulate(
+                cumulativeVhclTravelTime.begin(),
+                cumulativeVhclTravelTime.end(),
+                0.0, AccumulateMapValues()) :
+            std::accumulate(
+                cumulativeTravelTime.begin(),
+                cumulativeTravelTime.end(),
+                0.0, AccumulateMapValues());
+        int n = perVehicle ? std::accumulate(
+                finishedVhclCnt.begin(),
+                finishedVhclCnt.end(),
+                0, AccumulateMapValues()) :
+            std::accumulate(
+                finishedCnt.begin(),
+                finishedCnt.end(),
+                0, AccumulateMapValues());
         for (auto &vehicle_pair : vehiclePool) {
             auto &vehicle = vehicle_pair.second.first;
-            int people = vehicle->getPassengers();
+            int people = perVehicle ? 1 : vehicle->getPassengers();
             tt += people * (getCurrentTime() - vehicle->getEnterTime());
             n += people;
         }
         return n == 0 ? 0 : tt / n;
     }
 
-    std::map<std::string, double> Engine::getAverageTravelTimeByType() const {
-        std::map<const std::string, double> type_tt = cumulativeTravelTime;
-        std::map<const std::string, int> type_n = finishedCnt;
+    std::map<std::string, double> Engine::getAverageTravelTimeByType(bool perVehicle) const {
+        std::map<const std::string, double> type_tt = perVehicle ? cumulativeVhclTravelTime : cumulativeTravelTime;
+        std::map<const std::string, int> type_n = perVehicle ? finishedVhclCnt : finishedCnt;
         for (auto &vehicle_pair : vehiclePool) {
             auto &vehicle = vehicle_pair.second.first;
-            int people = vehicle->getPassengers();
+            int people = perVehicle ? 1 : vehicle->getPassengers();
             std::string type = vehicle->getType();
             auto timeCnt = type_tt.emplace(type, 0.0);
             timeCnt.first->second += people *
@@ -799,6 +811,9 @@ namespace CityFlow {
 
         finishedCnt.clear();
         cumulativeTravelTime.clear();
+
+        finishedVhclCnt.clear();
+        cumulativeVhclTravelTime.clear();
 
         for (auto &flow : flows) flow.reset();
         step = 0;

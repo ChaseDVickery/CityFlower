@@ -8,7 +8,8 @@ namespace CityFlow {
 
     Archive::Archive(const Engine &engine)
     : step(engine.step), activeVehicleCount(engine.activeVehicleCount), rnd(engine.rnd),
-      finishedCnt(engine.finishedCnt), cumulativeTravelTime(engine.cumulativeTravelTime) {
+      finishedCnt(engine.finishedCnt), cumulativeTravelTime(engine.cumulativeTravelTime),
+      finishedVhclCnt(engine.finishedVhclCnt), cumulativeVhclTravelTime(engine.cumulativeVhclTravelTime) {
         // copy the vehicle Pool
         vehiclePool = copyVehiclePool(engine.vehiclePool);
 
@@ -123,6 +124,8 @@ namespace CityFlow {
         }
         engine.finishedCnt = this->finishedCnt;
         engine.cumulativeTravelTime = this->cumulativeTravelTime;
+        engine.finishedVhclCnt = this->finishedVhclCnt;
+        engine.cumulativeVhclTravelTime = this->cumulativeVhclTravelTime;
     }
 
     Archive::VehiclePool Archive::copyVehiclePool(const VehiclePool &src) {
@@ -185,6 +188,22 @@ namespace CityFlow {
                 iter.second, allocator);
         }
         jsonRoot.AddMember("cumulativeTravelTime", cumulativeTravelTimeValue, allocator);
+
+        rapidjson::Value finishedVhclCntValue(rapidjson::kObjectType);
+        for (const auto &iter : finishedVhclCnt) {
+            finishedVhclCntValue.AddMember(
+                rapidjson::Value(iter.first, allocator).Move(),
+                iter.second, allocator);
+        }
+        jsonRoot.AddMember("finishedVhclCnt", finishedVhclCntValue, allocator);
+
+        rapidjson::Value cumulativeVhclTravelTimeValue(rapidjson::kObjectType);
+        for (const auto &iter : cumulativeVhclTravelTime) {
+            cumulativeVhclTravelTimeValue.AddMember(
+                rapidjson::Value(iter.first, allocator).Move(),
+                iter.second, allocator);
+        }
+        jsonRoot.AddMember("cumulativeVhclTravelTime", cumulativeVhclTravelTimeValue, allocator);
 
         writeJsonToFile(fileName, jsonRoot);
     }
@@ -570,6 +589,16 @@ namespace CityFlow {
         auto &cumulativeTravelTimeValue = getJsonMemberObject("cumulativeTravelTime", jsonRoot);
         for (auto &entry : cumulativeTravelTimeValue.GetObject()) {
             cumulativeTravelTime[entry.name.GetString()] = entry.value.GetDouble();
+        }
+
+        auto &finishedVhclCntValue = getJsonMemberObject("finishedVhclCnt", jsonRoot);
+        for (auto &entry : finishedVhclCntValue.GetObject()) {
+            finishedVhclCnt[entry.name.GetString()] = entry.value.GetInt();
+        }
+
+        auto &cumulativeVhclTravelTimeValue = getJsonMemberObject("cumulativeVhclTravelTime", jsonRoot);
+        for (auto &entry : cumulativeVhclTravelTimeValue.GetObject()) {
+            cumulativeVhclTravelTime[entry.name.GetString()] = entry.value.GetDouble();
         }
     }
 
